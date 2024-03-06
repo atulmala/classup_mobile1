@@ -1,16 +1,19 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ThemeProvider, createTheme,lightColors } from '@rneui/themed';
-import { View } from 'react-native';
+import { ThemeProvider, createTheme, lightColors } from '@rneui/themed';
 import LoginScreen from './src/screens/Login/LoginScreen';
+import MainMenuScreen from './src/screens/MainMenu/MainMenuScreen'; // Import the new MainMenuScreen component
 import { AuthProvider } from './AuthProvider';
+import { Platform } from 'react-native';
 
-// Initialize Apollo Client
+const Stack = createStackNavigator();
+
 const client = new ApolloClient({
   uri: 'https://dev1.classupclient.com/graphql',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 const theme = createTheme({
@@ -18,7 +21,8 @@ const theme = createTheme({
     ...Platform.select({
       default: lightColors.platform.android,
       ios: lightColors.platform.ios,
-    })},
+    }),
+  },
   darkColors: {
     primary: '#000',
   },
@@ -31,9 +35,12 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <SafeAreaProvider>
           <AuthProvider>
-            <View style={{ flex: 1 }}>
-              <LoginScreen />
-            </View>
+            <NavigationContainer>
+              <Stack.Navigator initialRouteName="Login">
+                <Stack.Screen name='Login' component={LoginScreen} />
+                <Stack.Screen name='Main Menu' component={MainMenuScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
           </AuthProvider>
         </SafeAreaProvider>
       </ThemeProvider>
